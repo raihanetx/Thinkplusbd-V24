@@ -1,6 +1,5 @@
 <?php
-header('Content-Type: application/json');
-
+<?php
 function get_products_with_discounts() {
     $products_file_path = __DIR__ . '/products.json';
     if (!file_exists($products_file_path)) {
@@ -37,6 +36,4 @@ function get_products_with_discounts() {
 
     return $products;
 }
-
-echo json_encode(get_products_with_discounts());
 ?>

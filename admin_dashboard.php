@@ -82,6 +82,8 @@ function get_products() {
     return json_decode($json_data, true);
 }
 
+require_once __DIR__ . '/get_discounted_products.php';
+
 function save_products($products) {
     $products_file_path = __DIR__ . '/products.json';
     $json_data = json_encode($products, JSON_PRETTY_PRINT);
@@ -171,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $product_id = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
 
         if ($product_id > 0) {
-            $products = get_products();
+            $products = get_products_with_discounts();
             $product_index = -1;
 
             foreach ($products as $index => $product) {
@@ -233,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $product_id = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
 
         if ($product_id > 0) {
-            $products = get_products();
+            $products = get_products_with_discounts();
             $product_index = -1;
 
             foreach ($products as $index => $product) {
@@ -415,7 +417,7 @@ $current_total_pending_all_time = getCurrentTotalPendingOrders($all_site_orders_
                 <?php
                 $categories = get_categories();
                 $selected_category = isset($_GET['category']) ? $_GET['category'] : null;
-                $products = get_products();
+                $products = get_products_with_discounts();
                 ?>
                 <div class="content-card">
                     <h2 class="card-title">Select a Category to Edit Products</h2>
@@ -546,7 +548,7 @@ $current_total_pending_all_time = getCurrentTotalPendingOrders($all_site_orders_
             <?php elseif (isset($_GET['page']) && $_GET['page'] === 'edit_product' && isset($_GET['id'])): ?>
                 <?php
                 $product_id = (int)$_GET['id'];
-                $products = get_products();
+                $products = get_products_with_discounts();
                 $product_to_edit = null;
                 foreach ($products as $product) {
                     if ($product['id'] === $product_id) {
