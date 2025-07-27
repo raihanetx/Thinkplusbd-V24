@@ -2201,6 +2201,8 @@ src="https://www.facebook.com/tr?id=482675157669768&ev=PageView&noscript=1"
             if (product.stock === 0) {
                 const stockBadge = `<div class="stock-badge out-of-stock">Stock Out</div>`;
                 imageContainer.innerHTML += stockBadge;
+            } else if (saleBadgeHTML) {
+                imageContainer.innerHTML += saleBadgeHTML;
             }
 
             const skeletonDiv = document.createElement('div'); skeletonDiv.className = 'skeleton'; imageContainer.appendChild(skeletonDiv);
@@ -2211,6 +2213,7 @@ src="https://www.facebook.com/tr?id=482675157669768&ev=PageView&noscript=1"
             let priceToDisplayNum;
             let priceDisplay;
             let durationInfoHTML = '';
+            let saleBadgeHTML = '';
 
             if (product.durations && product.durations.length > 0) {
                 priceToDisplayNum = Math.min(...product.durations.map(d => parseFloat(d.price)));
@@ -2220,6 +2223,7 @@ src="https://www.facebook.com/tr?id=482675157669768&ev=PageView&noscript=1"
                 priceToDisplayNum = parseFloat(product.price);
                 if (product.original_price) {
                     priceDisplay = `<span style="text-decoration: line-through; color: #999;">৳${Math.floor(product.original_price)}</span> ৳${Math.floor(priceToDisplayNum)}`;
+                    saleBadgeHTML = '<div class="stock-badge sale-badge" style="background-color: #28a745; color: white; top: 10px; left: 10px; right: auto;">Sale</div>';
                 } else {
                     priceDisplay = `৳${Math.floor(priceToDisplayNum)}`;
                 }
