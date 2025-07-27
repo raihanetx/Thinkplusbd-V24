@@ -1870,7 +1870,7 @@ src="https://www.facebook.com/tr?id=482675157669768&ev=PageView&noscript=1"
             if (isLoadingProducts || (allProductsData.length > 0 && !forceRefresh && !initialLoadPending)) { return; }
             isLoadingProducts = true;
             try {
-                const response = await fetch('get_products.php');
+                const response = await fetch('get_discounted_products.php');
                 const products = await response.json();
                 allProductsData = products.map(p => ({...p, slug: createSlug(p.name)}));
                 if (!Array.isArray(allProductsData)) { throw new Error("Invalid product data format."); }
@@ -2214,11 +2214,15 @@ src="https://www.facebook.com/tr?id=482675157669768&ev=PageView&noscript=1"
 
             if (product.durations && product.durations.length > 0) {
                 priceToDisplayNum = Math.min(...product.durations.map(d => parseFloat(d.price)));
-                 priceDisplay = `Starts at ৳${Math.floor(priceToDisplayNum)}`;
+                priceDisplay = `Starts at ৳${Math.floor(priceToDisplayNum)}`;
                 durationInfoHTML = `<div class="product-card-duration">${product.durations.length} options available</div>`;
             } else {
                 priceToDisplayNum = parseFloat(product.price);
-                priceDisplay = `৳${Math.floor(priceToDisplayNum)}`;
+                if (product.original_price) {
+                    priceDisplay = `<span style="text-decoration: line-through; color: #999;">৳${Math.floor(product.original_price)}</span> ৳${Math.floor(priceToDisplayNum)}`;
+                } else {
+                    priceDisplay = `৳${Math.floor(priceToDisplayNum)}`;
+                }
             }
 
             const tempDiv = document.createElement('div'); tempDiv.appendChild(imageContainer);
@@ -2342,6 +2346,13 @@ src="https://www.facebook.com/tr?id=482675157669768&ev=PageView&noscript=1"
                 durationSelectorHTML = `<div class="duration-selector" style="margin-bottom:0.75rem;display:block;"><label for="duration-detail-${product.id}" style="font-weight:600;margin-bottom:0.5rem;display:block;">Select Duration:</label><select id="duration-detail-${product.id}" data-product-id="${product.id}" style="width:100%;padding:0.7rem;border:1px solid #ccc;border-radius:6px;font-size:1rem;">${product.durations.map(d => `<option value="${parseFloat(d.price)}" ${parseFloat(d.price) === currentPrice ? 'selected' : ''}>${d.label} - ৳${parseFloat(d.price).toFixed(2)}</option>`).join('')}</select></div>`;
             }
 
+            let priceDisplayHTML;
+            if (product.original_price) {
+                priceDisplayHTML = `<span style="text-decoration: line-through; color: #999; font-size: 1.2rem;">৳${parseFloat(product.original_price).toFixed(2)}</span> ৳${currentPrice.toFixed(2)}`;
+            } else {
+                priceDisplayHTML = `৳${currentPrice.toFixed(2)}`;
+            }
+
             const relatedProductsHTML = renderRelatedProductsSection(product.id, product.category);
             const tempImageDiv = document.createElement('div');
             tempImageDiv.appendChild(imageContainer);
@@ -2355,7 +2366,7 @@ src="https://www.facebook.com/tr?id=482675157669768&ev=PageView&noscript=1"
                     <div class="product-detail-info">
                         <h2 class="product-detail-title">${product.name || 'N/A'}</h2>
                         <p class="product-detail-description">${shortDescription}</p>
-                        <div class="product-detail-price">৳${currentPrice.toFixed(2)}</div>
+                        <div class="product-detail-price">${priceDisplayHTML}</div>
                         ${durationSelectorHTML}
                         <div class="product-detail-actions">
                             <button class="buy-now-detail">Buy Now</button>
